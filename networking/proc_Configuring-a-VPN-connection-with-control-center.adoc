@@ -1,0 +1,143 @@
+// Module included in the following assemblies:
+//
+// assembly_configuring-networking-with-gnome-gui.adoc
+
+[id="Configuring-a-VPN-connection-with-control-center_{context}"]
+= Configuring a VPN connection with control-center
+
+A Virtual Private Network (VPN) is a way of connecting to a local network over the internet. `IPsec`, provided by [application]*Libreswan*, is the preferred method for creating a VPN. [application]*Libreswan* is an open-source, user-space `IPsec` implementation for VPN. A Virtual Private Network (VPN) enables communication between your Local Area Network (LAN), and another, remote LAN. This is done by setting up a tunnel across an intermediate network such as the Internet. The VPN tunnel that is set up typically uses authentication and encryption.
+
+
+This procedure describes how to configure a VPN connection using *control-center*.
+
+[discrete]
+== Prerequisites
+* The `NetworkManager-libreswan-gnome` package is installed.
+* Start for adding a `VPN` connection as explained  xref:Creating_a_Network_Connection_using_control_center[].
+
+// To add the content from the security https://projects.engineering.redhat.com/browse/RHELPLAN-11022?src=confmacro
+
+[discrete]
+== Procedure
+
+. Select the `Identity` menu entry to see the basic configuration options:
++
+*General*
++
+`Gateway` — The name or `IP` address of the remote VPN gateway.
++
+//+
+//** `User name` — If required, enter the user name associated with the VPN user's identity for authentication.
+//+
+//** `User password` — If required, enter the password associated with the VPN user's identity for authentication.
+//+
+//** `Group name` — The name of a VPN group configured on the remote gateway. In case it is blank, the IKEv1 Main mode is used instead of the default Aggressive mode.
+//+
+//** `Secret`— It is a pre-shared key which is used to initialize the encryption before the user's authentication. If required, enter the password associated with the group name.
++
+*Authentication*
++
+`Type`
+
+** `IKEv2 (Certificate)`- client is authenticated by certificate. It is more secure (default). 
+
+** `IKEv1 (XAUTH)` - client is authenticated by username and password, or
+secret (PSK).
++
+The following configuration settings are available under the [option]`Advanced` section:
+[[figu-Advanced-options-of-a-VPN-connection]]
+.Advanced options of a VPN connection
+image::networking_vpn_advanced_options.png[]
++
+WARNING: When configuring an `IPsec based VPN` connection using the `gnome-control-center` application, the `Advanced` dialog will only display the configuration, but will not allow doing any change. As a consequence, users cannot change any advanced IPsec options. Use the `nm-connection-editor` or `nmcli` tools instead to perform configuration of the advanced properties.
++
+*Identification*
++
+`Domain` — If required, enter the Domain Name.
++
+*Security*
++
+** `Phase1 Algorithms` — corresponds to the `ike` Libreswan parameter — enter the algorithms to be used to authenticate and set up an encrypted channel.
++
+** `Phase2 Algorithms` — corresponds to the `esp` Libreswan parameter — enter the algorithms to be used for the `IPsec` negotiations.
++
+*** Check the `Disable PFS` field to turn off Perfect Forward Secrecy (PFS)to ensure compatibility with old servers that do not support PFS.
++
+** `Phase1 Lifetime` —  corresponds to the `ikelifetime` Libreswan parameter — how long the key used to encrypt the traffic will be valid.
++
+** `Phase2 Lifetime` — corresponds to the `salifetime` Libreswan parameter — how long how long a particular instance of a connection should last before expiring.
++
+Note that the encryption key should be changed from time to time for security reasons.
++
+** `Remote network`  — corresponds to the `rightsubnet` Libreswan parameter —
+the destination private remote network that should be reached throught the VPN.
++
+*** Check the `narrowing` field to enable narrowing. Note that it is only effective in IKEv2 negotiation.
++
+** `Enable fragmentation` — corresponds to the `fragmentation` Libreswan parameter — whether or not to allow IKE fragmentation. Valid values are `yes` (default), or `no`.
++
+** `Enable Mobike` — corresponds to the `mobike` Libreswan parameter — whether to allow MOBIKE (RFC 4555) to enable a connection to migrate its endpoint without needing to restart the connection from scratch. This is used on mobile devices that switch between wired, wireless or mobile data connections. The values are `no` (default) or yes.
++
+. For further configuration, select the btn:[IPv4] menu entry:
++
+* `IPv4 Method`
++
+** `Automatic (DHCP)` — Choose this option if the network you are connecting to uses Router Advertisements (RA) or a `DHCP` server to assign dynamic `IP` addresses.
++
+** `Link-Local Only` — Choose this option if the network you are connecting to does not have a `DHCP` server and you do not want to assign `IP` addresses manually. Random addresses will be assigned as per [citetitle]_link:++http://www.rfc-editor.org/info/rfc3927++[RFC 3927]_ with prefix `169.254/16`.
++
+** `Manual` — Choose this option if you want to assign `IP` addresses manually.
++
+** `Disable` — `IPv4` is disabled for this connection.
++
+* `DNS`
++
+In the `DNS` section, when `Automatic` is `ON`, switch it to `OFF` to enter the IP address of a DNS server you want to use separating the IPs by comma.
++
+* `Routes`
++
+Note that in the `Routes` section, when `Automatic` is `ON`, routes from Router Advertisements (RA) or DHCP are used, but you can also add additional static routes. When `OFF`, only static routes are used.
++
+** `Address` — Enter the `IP` address of a remote network, sub-net, or host.
++
+** `Netmask` — The netmask or prefix length of the `IP` address entered above.
++
+** `Gateway` — The `IP` address of the gateway leading to the remote network, sub-net, or host entered above.
++
+** `Metric` — A network cost, a preference value to give to this route. Lower values will be preferred over higher values.
++
+* `Use this connection only for resources on its network`
++
+Select this check box to prevent the connection from becoming the default route. Selecting this option means that only traffic specifically destined for routes learned automatically over the connection or entered here manually will be routed over the connection.
++
+. Alternatively, to configure `IPv6` settings in a `VPN` connection, select the btn:[IPv6] menu entry:
++
+* `IPv6 Method`
++
+** `Automatic` — Choose this option to use `IPv6` Stateless Address AutoConfiguration (SLAAC) to create an automatic, stateless configuration based on the hardware address and Router Advertisements (RA).
++
+** `Automatic, DHCP only` — Choose this option to not use RA, but request information from `DHCPv6` directly to create a stateful configuration.
++
+** `Link-Local Only` — Choose this option if the network you are connecting to does not have a `DHCP` server and you do not want to assign `IP` addresses manually. Random addresses will be assigned as per [citetitle]_link:++http://www.rfc-editor.org/info/rfc4862++[RFC 4862]_ with prefix `FE80::0`.
++
+** `Manual` — Choose this option if you want to assign `IP` addresses manually.
++
+** `Disable` — `IPv6` is disabled for this connection.
++
+Note that `DNS`, `Routes`, `Use this connection only for resources on its network` are common to `IPv4` settings.
++
+. Once you have finished editing the `VPN` connection, click the btn:[Add] button to customize the configuration or the btn:[Apply] button to save it for the existing one.
++
+. Switch the profile to `ON` to active the `VPN` connection.
+
+
+[NOTE]
+====
+When you add a new connection by clicking the plus button, *NetworkManager* creates a new configuration file for that connection and then opens the same dialog that is used for editing an existing connection. The difference between these dialogs is that an existing connection profile has a *Details* menu entry.
+====
+
+
+[discrete]
+== Additional resources
+
+ * For more details on the supported *Libreswan* parameters, see the `nm-settings-libreswan` man page.

@@ -1,0 +1,6 @@
+// Documentation attributes shared by all documents:
+:ProductName: Red{nbsp}Hat Enterprise{nbsp}Linux
+:RH: Red{nbsp}Hat
+:RHEL: Red{nbsp}Hat Enterprise{nbsp}Linux
+
+:experimental:

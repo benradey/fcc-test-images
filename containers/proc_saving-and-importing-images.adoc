@@ -1,0 +1,27 @@
+[id="saving-and-importing-images_{context}"]
+= Saving and importing images
+
+If you want to save a container image you created, you can use `podman save`
+to save the image to a tarball. After that, you can store it or send it to
+someone else, then reload the image later to reuse it. Here is an example
+of saving an image as a tarball:
+
+....
+# podman save -o myrsyslog.tar registry.redhat.io/rhel8/rsyslog:latest
+Getting image source signatures
+Copying blob sha256:dd7d5adb457...
+Writing manifest to image destination
+Storing signatures
+# ls
+myrsyslog.tar
+....
+
+The `myrsyslog.tar` file should now be stored in your current directory.
+Later, when you ready to reuse the tarball as a container image, you can
+import it to another podman environment as follows:
+
+....
+# cat myrsyslog.tar | podman import - rhel8/myrsyslog
+# podman images
+....
+

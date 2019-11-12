@@ -1,0 +1,14 @@
+server: http://pantheon2-qa.int.us-east.aws.preprod.paas.redhat.com/
+#server: http://pantheon2-dev.int.us-east.aws.preprod.paas.redhat.com/
+repository: demo-upload-images
+followlinks: true
+
+titles:
+
+modules:
+ - containers/*.adoc
+
+resources:
+ - shared/**
+ - images/**
+ - attributes.adoc

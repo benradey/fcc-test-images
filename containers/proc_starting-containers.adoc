@@ -1,0 +1,17 @@
+[id="starting-containers_{context}"]
+= Starting containers
+
+A container that doesn't need to run interactively can sometimes be restarted after being stopped with only the `start` option and the container ID or name. For example:
+
+....
+# podman start myrhel_httpd
+myrhel_httpd
+....
+
+To start a container so you can work with it from the local shell, use the -a (attach) and -i (interactive) options. Once the bash shell starts, run the commands you want inside the container and type exit to kill the shell and stop the container.
+
+....
+# podman start -a -i agitated_hopper
+[root@d65aecc325a4 /]#  exit
+....
+

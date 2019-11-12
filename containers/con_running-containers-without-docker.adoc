@@ -1,0 +1,39 @@
+[id="running-containers-without-docker_{context}"]
+= Running containers without Docker
+
+Red Hat did not just remove the Docker container engine from OpenShift.
+It also removed the Docker container engine, along with the `docker` command,
+from Red Hat Enterprise Linux 8 entirely. For RHEL 8, Docker is not included and not supported.
+
+The removal of Docker reflects a change in Red Hat's way of thinking about
+how containers are handled:
+
+* In the enterprise, the focus is not on running individual containers from the
+command line. The primary venue for running containers is a Kubernetes-based
+platform, such as OpenShift.
+
+* By repositioning OpenShift as the project for running containers, container engines
+like Docker become just another component of OpenShift with no direct access by end users.
+
+* Because the container engine in OpenShift is not meant to be used directly,
+it can be implemented with a limited feature set that focuses on doing everything
+that OpenShift needs, without having to implement lots of standalone features.
+
+Although Docker is gone from RHEL 8, and OpenShift's container engine
+is disconnected from single-node uses, people still want to use commands 
+to work with containers and images manually. So Red Hat set about to create
+a set of tools to implement most of what the `docker` command does.  
+
+Tools like `podman`, `skopeo`, and `buildah` were developed to 
+take over those `docker` command features.
+Each tool in this scenario can be more light-weight and focused on a subset of features.
+And with no need for a daemon process running to implement a container engine, these
+tools can run without the overhead of having to work with a daemon process.
+
+If you feel that you still want to use Docker in RHEL 8, know that you can get
+Docker from different upstream projects, but that its use is unsupported in
+RHEL 8. Because so many `docker` command-line features have been implemented exactly
+in `podman`, you can set up an alias so that typing `docker` causes podman to run.
+
+Installing the podman-docker package sets up such an alias. So every time you
+run a `docker` command line, it actually runs `podman` for you. More on this package later.

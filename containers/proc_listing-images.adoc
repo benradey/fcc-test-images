@@ -1,0 +1,13 @@
+[id="listing-images_{context}"]
+= Listing images
+
+To see which images have been pulled to your local system and are available to use, type:
+
+....
+# podman images
+REPOSITORY                               TAG      IMAGE ID     CREATED      VIRTUAL SIZE
+registry.redhat.io/rhel8/support-tools   latest   b3d6ce4e0043 2 days ago   234MB
+registry.redhat.io/rhel8/rhel-init       latest   779a05997856 2 days ago   225MB
+registry.redhat.io/ubi8/ubi              latest   a80dad1c1953 3 days ago   210MB
+....
+

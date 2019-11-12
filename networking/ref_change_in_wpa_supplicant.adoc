@@ -1,0 +1,12 @@
+[id="change_in_wpa_supplicant_{context}"]
+= Changes in `wpa_supplicant`
+test
+[id="wpa-supplicant-journalctl_{context}"]
+== `journalctl` can now read the `wpa_supplicant` log
+
+In Red Hat Enterprise Linux (RHEL) 8, the [package]`wpa_supplicant` package is built with `CONFIG_DEBUG_SYSLOG` enabled. This allows reading the `wpa_supplicant` log using the `journalctl` utility instead of checking the contents of the `/var/log/wpa_supplicant.log` file.
+
+[id="wpa-supplicant-wireless_{context}"]
+== The compile-time support for wireless extensions in `wpa_supplicant` is disabled
+The `wpa_supplicant` package does not support wireless extensions. When a user is trying to use `wext` as a command-line argument, or trying to use it on old adapters which only support wireless extensions, will not be able to run the `wpa_supplicant` daemon.
+//(BZ#1537143)

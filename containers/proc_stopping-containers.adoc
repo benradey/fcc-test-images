@@ -1,0 +1,24 @@
+[id="stopping-containers_{context}"]
+= Stopping containers
+
+To stop a running container that is not attached to a terminal session, use the stop option and the container ID or number. For example:
+
+....
+# podman stop 74b1da000a11
+74b1da000a114015886c557deec8bed9dfb80c888097aa83f30ca4074ff55fb2
+....
+
+The `stop` option sends a SIGTERM signal to terminate a running container.
+If the container doesn't stop after a grace period (10 seconds by default),
+`podman` sends a SIGKILL signal.
+You could also use the `podman kill` command to kill a container (SIGKILL)
+or send a different signal to a container.
+Here's an example of sending a
+SIGHUP signal to a container (if supported by the application, a SIGHUP
+causes the application to re-read its configuration files):
+
+....
+# podman kill --signal="SIGHUP" 74b1da000a11
+74b1da000a114015886c557deec8bed9dfb80c888097aa83f30ca4074ff55fb2
+....
+

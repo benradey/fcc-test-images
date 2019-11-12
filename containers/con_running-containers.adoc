@@ -1,0 +1,132 @@
+[id="running-containers_{context}"]
+:imagesdir: images
+
+= Running containers
+
+When you execute a `podman run` command, you essentially spin up and create a new container from
+a container image. The command you pass on the `podman run` command line sees the inside the
+container as its running environment so, by default, very little can be seen of the host system.
+For example, by default, the running applications sees:
+
+* The file system provided by the container image.
+
+* A new process table from inside the container (no processes from the host can be seen).
+
+If you want to make a directory from the host available to the container, map network ports
+from the container to the host, limit the amount of memory the container can use, or expand
+the CPU shares available to the container, you can do those things from the `podman run`
+command line. Here are some examples of `podman run` command lines that enable different features.
+
+*EXAMPLE #1 (Run a quick command)*: This podman command runs the `cat /etc/os-release` command to see 
+the type of operating system used as the basis for the container. After the container runs the command,
+the container exits and is deleted (`--rm`).
+
+....
+# podman run --rm registry.redhat.io/ubi8/ubi cat /etc/os-release 
+NAME="Red Hat Enterprise Linux"
+VERSION="8.0 (Ootpa)"
+ID="rhel"
+ID_LIKE="fedora"
+VERSION_ID="8.0"
+PLATFORM_ID="platform:el8"
+PRETTY_NAME="Red Hat Enterprise Linux 8.0 (Ootpa)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:redhat:enterprise_linux:8.0:latest"
+HOME_URL="https://www.redhat.com/"
+BUG_REPORT_URL="https://bugzilla.redhat.com/"
+
+REDHAT_BUGZILLA_PRODUCT="Red Hat Enterprise Linux 8"
+REDHAT_BUGZILLA_PRODUCT_VERSION=8.0
+REDHAT_SUPPORT_PRODUCT="Red Hat Enterprise Linux"
+REDHAT_SUPPORT_PRODUCT_VERSION="8.0"
+...
+....
+
+
+*EXAMPLE #2 (View the Dockerfile in the container)*: This is another example of running a
+quick command to inspect the content of a container from the host. All layered images
+that Red Hat provides include the Dockerfile from which they are built in `/root/buildinfo`.
+In this case you do not need to mount any volumes from the host.
+
+You should see two images below:
+
+image::tiger.png[]
+image::switching_between_new_and_old_versions.png[]
+
+....
+# podman run --rm registry.access.redhat.com/rhel8/rsyslog  ls /root/buildinfo
+Dockerfile-rhel8-rsyslog-8
+....
+
+Now you know what the Dockerfile is called, you can list its contents:
+
+....
+# podman run --rm registry.access.redhat.com/rhel8/rsyslog \
+    cat /root/buildinfo/Dockerfile-rhel8-rsyslog-8
+FROM sha256:eb205f07ce7d0bb63bfe560...
+LABEL maintainer="Red Hat, Inc."
+
+RUN INSTALL_PKGS="\
+rsyslog \
+rsyslog-gnutls \
+rsyslog-gssapi \
+rsyslog-mysql \
+rsyslog-pgsql \
+rsyslog-relp \
+" && yum -y install $INSTALL_PKGS && rpm -V --nosize
+    --nofiledigest --nomtime --nomode $INSTALL_PKGS && yum clean all
+LABEL com.redhat.component="rsyslog-container"
+LABEL name="rhel8/rsyslog"
+LABEL version="8.0"
+...
+....
+*EXAMPLE #3 (Run a shell inside the container)*: Using a container to launch a
+bash shell lets you look inside the container and change the contents.
+This sets the name of the container to `mybash`.
+The `-i` creates an interactive session and `-t` opens a terminal session.
+Without `-i`, the shell would open and then exit. Without `-t`, the shell
+would stay open, but you wouldn't be able to type anything to the shell.
+
+Once you run the command, you are presented with a shell prompt and you can
+start running commands from inside the container:
+
+....
+# podman run --name=mybash -it registry.redhat.io/ubi8/ubi /bin/bash
+[root@ed904b8f2d5c/]#  ps -ef
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 00:46 pts/0    00:00:00 /bin/bash
+root        35     1  0 00:51 pts/0    00:00:00 ps -ef
+[root@49830c4f9cc4/]# exit
+....
+
+Although the container is no longer running once you exit, the container still exists with the new software package still installed. Use `podman ps -a` to list the container:
+
+....
+# podman ps -a
+CONTAINER ID IMAGE                 COMMAND   CREATED        STATUS                PORTS NAMES        IS INFRA
+1ca061b47bd7 .../ubi8/ubi:latest   /bin/bash 8 minutes ago  Exited 12 seconds ago       musing_brown false
+...
+....
+
+You could start that container again using `podman start` with the `-ai` options. For example:
+
+....
+# podman start -ai mybash
+[root@ed904b8f2d5c/]#
+....
+
+*EXAMPLE #4 (Bind mounting log files)*: One way to make log messages from inside
+a container available to the host system is to bind mount the host's /dev/log
+device inside the container. This example illustrates how to run an application
+in a RHEL container that is named `log_test` that generates log messages (just
+the logger command in this case) and directs those messages to the /dev/log
+device that is mounted in the container from the host. The `--rm` option removes
+the container after it runs.
+
+....
+# podman run --name="log_test" -v /dev/log:/dev/log --rm \
+     registry.redhat.io/ubi8/ubi logger "Testing logging to the host"
+# journalctl -b | grep Testing
+Nov 12 20:00:10 ubi8 root[17210]: Testing logging to the host
+....
+

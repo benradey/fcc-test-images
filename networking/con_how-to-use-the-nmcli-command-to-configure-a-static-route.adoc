@@ -1,0 +1,49 @@
+// Module included in the following assemblies:
+//
+// <List assemblies here, each on a new line>
+
+// This module can be included from assemblies using the following include statement:
+// include::<path>/con_how-to-use-the-nmcli-command-to-configure-a-static-route.adoc[leveloffset=+1]
+
+// The file name and the ID are based on the module title. For example:
+// * file name: con_my-concept-module-a.adoc
+// * ID: [id='con_my-concept-module-a_{context}']
+// * Title: = My concept module A
+//
+// The ID is used as an anchor for linking to the module. Avoid changing
+// it after the module has been published to ensure existing links are not
+// broken.
+//
+// The `context` attribute enables module reuse. Every module's ID includes
+// {context}, which ensures that the module has a unique ID even if it is
+// reused multiple times in a guide.
+//
+// In the title, include nouns that are used in the body text. This helps
+// readers and search engines find information quickly.
+// Do not start the title with a verb. See also _Wording of headings_
+// in _The IBM Style Guide_.
+[id="how-to-use-the-nmcli-command-to-configure-a-static-route_{context}"]
+= How to use the nmcli command to configure a static route
+
+To configure a static route, use the [systemitem]`nmcli` utility with the following syntax:
+
+[literal,subs="+quotes"]
+----
+$ [command]`nmcli connection modify _connection_name_ ipv4.routes "_ip_[/_prefix_] [_next_hop_] [_metric_] [_attribute_=_value_] [_attribute_=_value_] ..."`
+----
+
+The command supports the following route attributes:
+
+* [command]`table=_n_`
+* [command]`src=_address_`
+* [command]`tos=_n_`
+* [command]`onlink=true|false`
+* [command]`window=_n_`
+* [command]`cwnd=_n_`
+* [command]`mtu=_n_`
+* [command]`lock-window=true|false`
+* [command]`lock-cwdn=true|false`
+* [command]`lock-mtu=true|false`
+
+If you use the [command]`ipv4.routes` sub-command, [command]`nmcli` overrides all current settings of this parameter. To add an additional route, use the [command]`nmcli connection modify _connection_name_ +ipv4.routes "..."` command. In a similar way, you can use [command]`nmcli connection modify _connection_name_ -ipv4.routes "..."` to remove a specific route.
+

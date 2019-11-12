@@ -1,0 +1,97 @@
+[id="inspecting-local-images_{context}"]
+= Inspecting local images
+
+After you pull an image to your local system and before you run it, it is a good idea to
+investigate that image. Reasons for investigating an image before you run it include:
+
+* Understanding what the image does
+* Checking what software is inside the image
+
+The `podman inspect` command displays basic information about what an image does.
+You also have the option of mounting the image to your host system and using tools
+from the host to investigate what's in the image. Here is an example of investigating
+what a container image does before you run it:
+
+. *Inspect an image*: Run `podman inspect` to see what command is executed when you run the container image, as well as other information. Here are examples of examining the ubi8/ubi and rhel8/rsyslog container images (with only snippets of information shown here):
+
++
+....
+# podman inspect registry.redhat.io/ubi8/rhel
+...
+   "Cmd": [
+       "/bin/bash"
+   ],
+   "Labels": {
+       "architecture": "x86_64",
+       "authoritative-source-url": "registry.redhat.io",
+       "build-date": "2018-10-24T16:46:08.916139",
+       "com.redhat.build-host": "cpt-0009.osbs.prod.upshift.rdu2.redhat.com",
+       "com.redhat.component": "rhel-server-container",
+       "description": "The Red Hat Enterprise Linux Base image is designed to be a fully supported...
+...
+....
++
+....
+# podman inspect registry.redhat.io/rhel8/rsyslog 
+   "Cmd": [
+     "/bin/rsyslog.sh"
+   ],
+   "Labels": {
+     "License": "GPLv3",
+     "architecture": "x86_64",
+...
+     "install": "docker run --rm --privileged -v /:/host -e HOST=/host \
+        -e IMAGE=IMAGE -e NAME=NAME IMAGE /bin/install.sh",
+
+...
+     "run": "docker run -d --privileged --name NAME --net=host --pid=host \
+        -v /etc/pki/rsyslog:/etc/pki/rsyslog -v /etc/rsyslog.conf:/etc/rsyslog.conf \
+        -v /etc/sysconfig/rsyslog:/etc/sysconfig/rsyslog -v /etc/rsyslog.d:/etc/rsyslog.d \
+        -v /var/log:/var/log -v /var/lib/rsyslog:/var/lib/rsyslog -v /run:/run \
+        -v /etc/machine-id:/etc/machine-id -v /etc/localtime:/etc/localtime \
+        -e IMAGE=IMAGE -e NAME=NAME --restart=always IMAGE /bin/rsyslog.sh",
+     "summary": "A containerized version of the rsyslog utility 
+...
+....
+
++
+The rhel8/rhel container will execute the bash shell, if no other argument is given when you start it with `podman run`. If an Entrypoint were set, its value would be used instead of the Cmd value (and the value of Cmd would be used as an argument to the Entrypoint command).
+
++
+In the second example, the rhel8/rsyslog container image has built-in `install` and `run` labels.
+Those labels give an indication of how the container is meant to be set up on the system (install)
+and executed (run). You would use the `podman` command instead of `docker`.
+
+. *Mount a container*: Using the `podman` command, mount an active container to further investigate its contents.
+This example lists a running `rsyslog` container, then displays the mount point from which you can
+examine the contents of its file system:
+
++
+....
+# podman ps
+CONTAINER ID IMAGE             COMMAND         CREATED        STATUS      PORTS NAMES
+1cc92aea398d ...rsyslog:latest /bin/rsyslog.sh 37 minutes ago Up 1 day ago      myrsyslog
+# podman mount 1cc92aea398d
+/var/lib/containers/storage/overlay/65881e78.../merged
+# ls /var/lib/containers/storage/overlay/65881e78*/merged
+bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+....
+
++
+After the *podman mount*, the contents of the container are accessible from
+the listed directory on the host.
+Use `ls` to explore the contents of the image.
+
+. *Check the image's package list*: To check the packages installed in the container, tell the `rpm` command to examine the packages installed on the container's mount point:
+
++
+....
+# rpm -qa --root=/var/lib/containers/storage/overlay/65881e78.../merged
+redhat-release-server-7.6-4.el7.x86_64
+filesystem-3.2-25.el7.x86_64
+basesystem-10.0-7.el7.noarch
+ncurses-base-5.9-14.20130511.el7_4.noarch
+glibc-common-2.17-260.el7.x86_64
+nspr-4.19.0-1.el7_5.x86_64
+libstdc++-4.8.5-36.el7.x86_64
+....

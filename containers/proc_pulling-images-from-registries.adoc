@@ -1,0 +1,70 @@
+[id="pulling-images-from-registries_{context}"]
+= Pulling images from registries
+
+To get container images from a remote registry (such as Red Hat's own container registry) and add them to your local system, use the `podman pull` command:
+
+----
+# podman pull <registry>[:<port>]/[<namespace>/]<name>:<tag>
+----
+
+The _<registry>_ is a host that provides a container registry service on TCP _<port>_.
+Together, _<namespace>_ and _<name>_ identify a particular image controlled by
+_<namespace>_ at that registry. Some registries also support raw _<name>_; for
+those, _<namespace>_ is optional. When it is included, however, the additional
+level of hierarchy that _<namespace>_ provides is useful to distinguish between
+images with the same _<name>_.  For example:
+
+|====
+| Namespace | Examples (_<namespace>_/_<name>_)
+
+| organization
+| `redhat/kubernetes`, `google/kubernetes`
+
+| login (user name)
+| `alice/application`, `bob/application`
+
+| role
+| `devel/database`, `test/database`, `prod/database`
+
+|====
+
+The registries that Red Hat supports are registry.redhat.io (requiring authentication)
+and registry.access.redhat.com (requires no authentication, but is deprecated). 
+For details on the transition to registry.redhat.io, see link:https://access.redhat.com/RegistryAuthentication[ Red Hat Container Registry Authentication ].
+Before you can pull containers from registry.redhat.io, you need to authenticate.
+For example:
+
+....
+# podman login registry.redhat.io
+Username: myusername
+Password: ************
+Login Succeeded!
+....
+
+Use the pull option to pull an image from a remote registry. To pull the rhel base image and rsyslog
+logging image from the Red Hat registry, type:
+
+....
+# podman pull registry.redhat.io/ubi8/ubi
+# podman pull registry.redhat.io/rhel8/rsyslog
+....
+
+An image is identified by a repository name (registry.redhat.io), a namespace name (ubi8)
+and the image name (ubi). You could also add a tag (which defaults to :latest if not entered).
+The repository name *ubi*, when passed to the *podman pull* command without the name of a
+registry preceding it, is ambiguous and could result in the retrieval of an image that
+originates from an untrusted registry.
+If there are multiple versions of the same image, adding a tag, such as *latest* to form a
+name such as *ubi8/ubi:latest*, lets you choose the image more explicitly.
+
+To see the images that resulted from the above *podman pull* command, along with any other
+images on your system, type *podman images*:
+
+....
+REPOSITORY                        TAG    IMAGE ID      CREATED     SIZE
+registry.redhat.io/ubi8/ubi       latest eb205f07ce7d  2 weeks ago 214MB
+registry.redhat.io/rhel8/rsyslog  latest 85cfba5cd49c  2 weeks ago 234MB
+....
+
+The `ubi` and `rsyslog` images are now available on your local system for you to work with.
+

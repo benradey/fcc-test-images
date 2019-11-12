@@ -1,0 +1,21 @@
+// This module can be included from assemblies using the following include statement:
+// include::<path>/con_configuring-802-3-link-settings.adoc[leveloffset=+1]
+[id="configuring-802-3-link-settings_{context}"]
+[[sec-Configuring_802.3_Link_Settings]]
+= Configuring 802.3 link settings
+
+You can configure the 802.3 link settings of an Ethernet connection by modifying the following configuration parameters:
+
+* `802-3-ethernet.auto-negotiate`
+
+* `802-3-ethernet.speed`
+
+* `802-3-ethernet.duplex`
+
+You can configure the 802.3 link settings to the following main modes:
+
+* Ignore link negotiation
+
+* Enforce the auto-negotiation activation
+
+* Manually set the `speed` and `duplex` link settings

@@ -1,0 +1,5 @@
+include::proc_Configuring-a-VPN-connection-with-control-center.adoc[]
+[id="ipvlan_network_drivers_{context}"]
+= IPVLAN virtual network drivers are now supported
+
+In Red Hat Enterprise Linux 8.0, the kernel includes support for IPVLAN virtual network drivers. With this update, IPVLAN virtual Network Interface Cards (NICs) enable the network connectivity for multiple containers exposing a single MAC address to the local network. This allows a single host to have a lot of containers overcoming the possible limitation on the number of MAC addresses supported by the peer networking equipment.

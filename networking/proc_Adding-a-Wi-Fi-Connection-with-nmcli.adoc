@@ -1,0 +1,119 @@
+// Module included in the following assemblies:
+//
+// assembly_Configuring-networking-with-nmcli.adoc
+
+[id="Adding-a-Wi-Fi-Connection-with-nmcli_{context}"]
+= Adding a Wi-Fi connection with nmcli
+
+[discrete]
+== Prerequisites
+* xref:Getting-started-with-nmcli_Configuring-networking-with-nmcli[]
+
+All access points have a Service Set Identifier (SSID) to identify them.
+
+To refresh the available Wi-Fi connection list:
+
+[literal,subs="+quotes,verbatim"]
+....
+~]$ `nmcli device wifi rescan`
+....
+
+To view the available Wi-Fi access points:
+
+[literal,subs="+quotes,verbatim"]
+....
+~]$ `nmcli dev wifi list`
+IN-USE  SSID          MODE  CHAN  RATE     SIGNAL  BARS  SECURITY
+       FedoraTest     Infra  11    54 MB/s  98      ▂▄▆█  WPA1
+       Red Hat Guest  Infra  6     54 MB/s  97      ▂▄▆█  WPA2
+       Red Hat        Infra  6     54 MB/s  77      ▂▄▆_  WPA2 802.1X
+     * Red Hat        Infra  40    54 MB/s  66      ▂▄▆_  WPA2 802.1X
+....
+
+To connect to a Wi-Fi connection using *nmcli*:
+[literal,subs="+quotes,verbatim"]
+....
+~]$ `nmcli dev wifi connect _SSID-Name_ password _wireless-password_`
+....
+
+For example:
+[literal,subs="+quotes,verbatim"]
+....
+~]$ `nmcli dev wifi connect MyCafe password _wireless-password_`
+....
+
+
+To create a Wi-Fi connection profile with static `IP` configuration, but allowing automatic `DNS` address assignment:
+
+[literal,subs="+quotes,verbatim,macros"]
+....
+~]$ pass:attributes[{blank}][command]`nmcli con add con-name _MyCafe_ ifname wlan0 type wifi ssid MyCafe \`
+[command]`ip4 192.168.100.101/24 gw4 192.168.100.1`
+....
+
+To set a WPA2 password, for example "caffeine":
+
+[literal,subs="+quotes,verbatim,macros"]
+....
+~]$ pass:attributes[{blank}][command]`nmcli con modify _MyCafe_ wifi-sec.key-mgmt wpa-psk`
+~]$ pass:attributes[{blank}][command]`nmcli con modify _MyCafe_ wifi-sec.psk caffeine`
+....
+
+//See the [citetitle]_link:++https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/++[Red{nbsp}Hat Enterprise{nbsp}Linux{nbsp}7 Security Guide]_ for information on password security.
+
+To change Wi-Fi state:
+
+[literal,subs="+quotes,verbatim,macros"]
+....
+~]$ pass:attributes[{blank}][command]`nmcli radio wifi on | off`
+....
+
+== Changing a specific property in a Wi-Fi connection using nmcli
+To check a specific property in a wireless connection, for example `mtu`:
+
+[literal,subs="+quotes,verbatim,macros"]
+....
+~]$ pass:attributes[{blank}][command]`nmcli connection show id 'pass:attributes[{blank}]_MyCafe_pass:attributes[{blank}]' | grep mtu`
+802-11-wireless.mtu:                     auto
+....
+
+To change the property of a setting:
+
+[literal,subs="+quotes,verbatim,macros"]
+....
+~]$ pass:attributes[{blank}][command]`nmcli connection modify id 'pass:attributes[{blank}]_MyCafe_pass:attributes[{blank}]' 802-11-wireless.mtu 1350`
+....
+
+To verify the change:
+
+[literal,subs="+quotes,verbatim,macros"]
+....
+~]$ pass:attributes[{blank}][command]`nmcli connection show id 'pass:attributes[{blank}]_MyCafe_pass:attributes[{blank}]' | grep mtu`
+802-11-wireless.mtu:                     1350
+....
+
+Note that [application]*NetworkManager* refers to parameters such as `802-3-ethernet` and `802-11-wireless` as the setting, and `mtu` as a property of the setting.
+
+== Connecting to a hidden Wi-Fi network using *nmcli*
+
+A hidden network is a normal wireless network that does not broadcast its SSID. This means that its name is not available in *NetworkManager's* list of Available networks.
+
+To create a connection with a hidden network _ssid_:
+
+[literal,subs="+quotes,verbatim,macros"]
+....
+~]$ `nmcli c add type wifi con-name _home_ ifname wlan0 ssid _ssid_`
+~]$ `nmcli c modify _home_ wifi-sec.key-mgmt wpa-psk wifi-sec.psk _wireless_password_`
+....
+
+To activate the connection:
+
+[literal,subs="+quotes,verbatim,macros"]
+....
+~]$ `nmcli c up _home_`
+....
+
+[discrete]
+== Additional resources
+
+* See the `nm-settings(5)` man page for more information on properties and their settings.

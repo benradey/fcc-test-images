@@ -1,0 +1,42 @@
+[id="removing-images_{context}"]
+= Removing Images
+
+To see a list of images that are on your system, run the `podman images` command.
+To remove images you no longer need, use the `podman rmi` command, with the
+image ID or name as an option.
+(You must stop any containers run from an image before you can remove the image.)
+Here is an example:
+
+....
+# podman rmi rhel-init
+7e85c34f126351ccb9d24e492488ba7e49820be08fe53bee02301226f2773293
+....
+
+You can remove multiple images on the same command line:
+
+....
+# podman rmi registry.redhat.io/rhel8/rsyslog support-tools
+46da8e23fa1461b658f9276191b4f473f366759a6c840805ed0c9ff694aa7c2f
+85cfba5cd49c84786c773a9f66b8d6fca04582d5d7b921a308f04bb8ec071205
+....
+
+If you want to clear out all your images, you could use a command like the following to remove all images from your local registry (make sure you mean it before you do this!):
+
+....
+# podman rmi $(podman images -a -q)
+1ca061b47bd70141d11dcb2272dee0f9ea3f76e9afd71cd121a000f3f5423731
+ed904b8f2d5c1b5502dea190977e066b4f76776b98f6d5aa1e389256d5212993
+83508706ef1b603e511b1b19afcb5faab565053559942db5d00415fb1ee21e96
+....
+
+To remove images that have multiple names (tags) associated with them,
+you need to add the force option to remove them. For example:
+
+....
+# podman rmi $(podman images -a -q)
+unable to delete eb205f07ce7d0bb63bfe5603ef8964648536963e2eee51a3ebddf6cfe62985f7 (must force) - image is referred to in multiple tags
+unable to delete eb205f07ce7d0bb63bfe5603ef8964648536963e2eee51a3ebddf6cfe62985f7 (must force) - image is referred to in multiple tags
+
+# podman rmi -f eb205f07ce7d
+eb205f07ce7d0bb63bfe5603ef8964648536963e2eee51a3ebddf6cfe62985f7
+....

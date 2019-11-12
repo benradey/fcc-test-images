@@ -1,0 +1,30 @@
+[id="inspecting-remote-images_{context}"]
+= Inspecting remote images
+
+To inspect a container image before you pull it to your system, you can use the `skopeo inspect`
+command. With `skopeo inspect`, you can display information about an image that
+resides in a remote container registry.
+
+The following command inspects the `rhel-init` image from the Red Hat registry:
+
+....
+# skopeo inspect docker://registry.redhat.io/rhel8/rhel-init
+{
+    "Name": "registry.redhat.io/rhel8/rhel-init",
+    "Digest": "sha256:53dfe24...",
+    "RepoTags": [
+        "8.0.0-9",
+        "8.0.0",
+        "latest"
+    ],
+    "Created": "2019-05-13T20:50:11.437931Z",
+    "DockerVersion": "1.13.1",
+    "Labels": {
+        "architecture": "x86_64",
+        "authoritative-source-url": "registry.access.redhat.com",
+        "build-date": "2019-05-13T20:49:44.207967",
+        "com.redhat.build-host": "cpt-0013.osbs.prod.upshift.rdu2.redhat.com",
+        "com.redhat.component": "rhel-init-container",
+        "description": "The Red Hat Enterprise Linux Init image is designed to be...
+....
+
