@@ -1,5 +1,5 @@
 [id="running-containers_{context}"]
-:imagesdir: images
+
 
 = Running containers
 
