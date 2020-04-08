@@ -1,0 +1,5 @@
+= Level 1 adoc
+
+level 1 content
+
+include::b/level2.adoc[]

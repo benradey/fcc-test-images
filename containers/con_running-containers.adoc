@@ -48,6 +48,8 @@ quick command to inspect the content of a container from the host. All layered i
 that Red Hat provides include the Dockerfile from which they are built in `/root/buildinfo`.
 In this case you do not need to mount any volumes from the host.
 
+include::a/level1.adoc[]
+
 You should see two images below:
 
 image::tiger.png[]

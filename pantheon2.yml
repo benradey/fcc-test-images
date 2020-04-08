@@ -8,3 +8,5 @@ repositories:
     resources:
       - shared/**
       - images/**
+      - containers/a/level1.adoc
+      - containers/a/b/level2.adoc
